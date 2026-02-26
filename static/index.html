@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skin Analysis | Natural Skin Intelligence AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400..900;1,400..900&family=Prompt:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #FF8FAB;
+            --primary-dark: #FB6F92;
+            --accent: #FFE5EC;
+            --text-main: #4A4A4A;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --shadow: 0 10px 40px rgba(255, 143, 171, 0.2);
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #FFF0F3;
+            margin: 0; padding: 20px; color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            background: var(--glass-bg); backdrop-filter: blur(12px);
+            max-width: 1000px; margin: 20px auto; padding: 40px;
+            border-radius: 40px; box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        header { text-align: center; margin-bottom: 40px; }
+        .brand-name { font-family: 'Bodoni Moda', serif; font-size: 38px; color: var(--primary-dark); text-transform: uppercase; letter-spacing: 2px; margin: 0; }
+
+        .input-card { background: white; padding: 25px; border-radius: 25px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .section-title { font-weight: 600; margin-bottom: 15px; color: var(--primary-dark); display: flex; align-items: center; gap: 10px; }
+        
+        .skin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .skin-option input { display: none; }
+        .skin-option label {
+            display: block; padding: 12px; background: #F8F9FA; border-radius: 15px;
+            cursor: pointer; text-align: center; transition: 0.3s; font-size: 14px;
+        }
+        .skin-option input:checked + label { background: var(--primary); color: white; transform: translateY(-2px); box-shadow: 0 5px 10px rgba(255, 143, 171, 0.3); }
+
+        .input-luxe { width: 100%; padding: 12px 20px; border-radius: 15px; border: 1px solid #FFE5EC; font-family: 'Prompt'; outline: none; box-sizing: border-box; }
+
+        .media-container {
+            border: 2px dashed #FFCCD5; border-radius: 25px; padding: 20px;
+            text-align: center; background: rgba(255,255,255,0.6); transition: 0.3s;
+            position: relative; overflow: hidden;
+        }
+        .upload-box { cursor: pointer; padding: 20px; }
+        
+        #cameraArea { display: none; margin-bottom: 15px; position: relative; }
+        #video { width: 100%; max-width: 500px; border-radius: 20px; background: #000; }
+        .snap-btn {
+            background: var(--primary-dark); color: white; border: none;
+            padding: 12px 25px; border-radius: 50px; cursor: pointer;
+            margin-top: 10px; font-family: 'Prompt'; font-weight: 600;
+        }
+
+        .toggle-media-btn {
+            background: none; border: 1px solid var(--primary); color: var(--primary-dark);
+            padding: 8px 15px; border-radius: 12px; cursor: pointer;
+            margin-bottom: 15px; font-family: 'Prompt'; font-size: 13px;
+        }
+
+        .btn-analyze {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white; border: none; width: 100%; padding: 18px; border-radius: 20px;
+            font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; transition: 0.3s;
+        }
+        .btn-analyze:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(251, 111, 146, 0.3); }
+
+        .btn-partner {
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
+            color: white !important; padding: 8px 15px; border-radius: 12px;
+            text-decoration: none; font-size: 11px; font-weight: 600;
+            display: inline-flex; align-items: center; gap: 5px;
+            transition: 0.3s; box-shadow: 0 4px 10px rgba(184,134,11,0.2);
+        }
+
+        #resultDashboard { display: none; margin-top: 30px; animation: fadeIn 0.8s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .dashboard-grid { display: grid; grid-template-columns: 320px 1fr; gap: 30px; }
+        .card { background: white; padding: 25px; border-radius: 25px; box-shadow: 0 5px 25px rgba(0,0,0,0.04); margin-bottom: 20px; }
+        .routine-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .routine-box { padding: 20px; border-radius: 20px; font-size: 13px; line-height: 1.6; }
+        .morning { background: #FFF9F0; border: 1px solid #FFE4C4; }
+        .evening { background: #F5F3FF; border: 1px solid #E0E7FF; }
+        .tag { background: #E6F4EA; color: #1E8E3E; padding: 5px 12px; border-radius: 20px; font-size: 12px; margin: 0 5px 5px 0; display: inline-block; font-weight: 500; }
+        
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-top: 30px; }
+        .product-card { background: white; border-radius: 25px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: 0.3s; position: relative; display: flex; flex-direction: column; }
+        .product-card:hover { transform: translateY(-8px); }
+        
+        /* 🛠️ แก้ไขพื้นที่รูปภาพให้รองรับขวดทรงสูงทุกรูปแบบ ไม่ให้โดนตัด */
+        .product-img-container { 
+            height: 260px; /* เพิ่มความสูงกล่องเพื่อให้ขวดทรงสูงมีพื้นที่ */
+            background: #ffffff; 
+            position: relative; 
+            padding: 25px; /* ขอบด้านใน ป้องกันรูปชิดขอบเกินไป */
+            box-sizing: border-box; 
+            display: flex; /* ใช้ flexbox จัดกึ่งกลาง */
+            justify-content: center; 
+            align-items: center; 
+        }
+        .product-img-container img { 
+            max-width: 100%; /* ห้ามกว้างเกินกรอบ */
+            max-height: 100%; /* ห้ามสูงเกินกรอบ (แก้ปัญหาหัว/ท้ายขาด) */
+            width: auto; 
+            height: auto; 
+            object-fit: contain; 
+        }
+        
+        .usage-badge { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.95); padding: 6px 14px; border-radius: 12px; font-size: 11px; color: var(--primary-dark); font-weight: 700; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 10;}
+        .product-info { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+        .product-name { font-size: 16px; font-weight: 600; margin: 0 0 5px 0; color: #333; }
+        
+        /* สไตล์ส่วนแบรนด์และรายละเอียดสินค้าที่เพิ่มใหม่ */
+        .product-brand { 
+            font-size: 12px; color: var(--primary-dark); font-weight: 700; 
+            text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px;
+        }
+        
+        .product-details { 
+            background: #FAFAFA; padding: 12px; border-radius: 15px; 
+            margin-bottom: 15px; font-size: 12px; line-height: 1.6; color: #555; 
+            text-align: left; border: 1px solid #F0F0F0;
+        }
+
+        .product-details strong { color: var(--primary-dark); font-weight: 600; }
+
+        .price { color: var(--primary-dark); font-weight: 700; font-size: 18px; }
+        .add-btn { background: var(--primary-dark); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+        
+        .cart-float { position: fixed; bottom: 30px; right: 30px; background: white; color: var(--primary-dark); width: 65px; height: 65px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 10px 30px rgba(255, 143, 171, 0.4); cursor: pointer; z-index: 1000; }
+        .cart-badge { position: absolute; top: 0; right: 0; background: var(--primary-dark); color: white; font-size: 12px; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid white; font-weight: bold; }
+        .cart-drawer { position: fixed; top: 0; right: -400px; width: 360px; height: 100%; background: white; z-index: 2000; box-shadow: -10px 0 30px rgba(0,0,0,0.1); transition: 0.4s; padding: 25px; display: flex; flex-direction: column; box-sizing: border-box; }
+        .cart-drawer.open { right: 0; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 1500; display: none; backdrop-filter: blur(3px); }
+        .cart-item { display: flex; gap: 15px; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #EEE; }
+        .cart-item img { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; }
+        
+        @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <header>
+            <h1 class="brand-name">Skin Analysis</h1>
+            <p style="font-size: 12px; color: var(--text-light); letter-spacing: 2px; margin-top: 5px; text-transform: uppercase;">Natural Skin Intelligence AI</p>
+        </header>
+
+        <div id="inputSection">
+            <div class="input-card">
+                <div class="section-title"><i class="fas fa-fingerprint"></i> 1. เลือกสภาพผิวของคุณ</div>
+                <div class="skin-grid">
+                    <div class="skin-option"><input type="radio" name="skinType" id="s1" value="ผิวธรรมดา" checked><label for="s1">ผิวธรรมดา</label></div>
+                    <div class="skin-option"><input type="radio" name="skinType" id="s2" value="ผิวมัน"><label for="s2">ผิวมัน</label></div>
+                    <div class="skin-option"><input type="radio" name="skinType" id="s3" value="ผิวแห้ง"><label for="s3">ผิวแห้ง</label></div>
+                    <div class="skin-option"><input type="radio" name="skinType" id="s4" value="ผิวผสม"><label for="s4">ผิวผสม</label></div>
+                    <div class="skin-option"><input type="radio" name="skinType" id="s5" value="ผิวแพ้ง่าย"><label for="s5">แพ้ง่าย</label></div>
+                </div>
+                <div class="section-title"><i class="fas fa-hand-dots"></i> 2. อาการแพ้ (ถ้ามี)</div>
+                <input type="text" id="allergyInput" class="input-luxe" placeholder="เช่น แพ้น้ำหอม, แพ้แอลกอฮอล์...">
+            </div>
+
+            <div class="input-card">
+                <div class="section-title"><i class="fas fa-camera"></i> 3. อัปโหลดรูปภาพ หรือใช้กล้องถ่ายสด</div>
+                <button id="toggleMedia" class="toggle-media-btn"><i class="fas fa-video"></i> สลับไปใช้กล้องถ่ายสด</button>
+                <div class="media-container">
+                    <div id="uploadArea" class="upload-box" onclick="document.getElementById('fileInput').click()">
+                        <input type="file" id="fileInput" hidden accept="image/*">
+                        <div id="placeholder">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i><br>
+                            <span style="font-weight: 500; font-size: 16px;">แตะเพื่อเลือกรูปภาพ</span>
+                        </div>
+                        <img id="preview" src="" style="width: 100%; border-radius: 20px; display: none; object-fit: cover; max-height: 400px;">
+                    </div>
+                    <div id="cameraArea">
+                        <video id="video" autoplay playsinline></video>
+                        <canvas id="canvas" style="display:none;" width="640" height="480"></canvas>
+                        <button id="snap" class="snap-btn"><i class="fas fa-camera"></i> ถ่ายรูปเลย</button>
+                    </div>
+                </div>
+            </div>
+            <button id="analyzeBtn" class="btn-analyze" disabled>✨ เริ่มการวิเคราะห์ผิว</button>
+        </div>
+
+        <div id="resultDashboard">
+            <div class="dashboard-grid">
+                <div class="sidebar">
+                    <div class="card" style="text-align: center;">
+                        <img id="userPhoto" src="" style="width: 100%; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <div style="background: #FFF0F3; padding: 20px; border-radius: 20px;">
+                            <div style="display:flex; justify-content:space-between; font-size:15px; margin-bottom:12px;">
+                                <span style="color: #666;">ความมัน (Oiliness)</span> 
+                                <span id="oilScore" style="font-weight:700; color: var(--primary-dark); font-size: 18px;">-</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; font-size:15px;">
+                                <span style="color: #666;">รอยแดง (Redness)</span> 
+                                <span id="redScore" style="font-weight:700; color: var(--primary-dark); font-size: 18px;">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="main-content">
+                    <div class="card">
+                        <h3 style="margin:0 0 20px 0; font-size:18px; font-family:'Bodoni Moda'; border-bottom: 1px solid #eee; padding-bottom: 10px;">Daily Routine</h3>
+                        <div class="routine-grid">
+                            <div class="routine-box morning">
+                                <strong style="color: #E67E22; font-size: 15px; display: block; margin-bottom: 10px;">☀️ ตอนเช้า</strong>
+                                <ul id="morningSteps" style="padding-left:18px; margin:0; color: #555;"></ul>
+                            </div>
+                            <div class="routine-box evening">
+                                <strong style="color: #6A5ACD; font-size: 15px; display: block; margin-bottom: 10px;">🌙 ตอนเย็น</strong>
+                                <ul id="eveningSteps" style="padding-left:18px; margin:0; color: #555;"></ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="margin:0 0 15px 0; font-size:18px; font-family:'Bodoni Moda';">AI Diagnosis</h3>
+                        <div id="ingredientTags" style="margin-bottom: 15px;"></div>
+                        <p id="adviceText" style="font-size:14px; color:#555; line-height:1.7; background: #FAFAFA; padding: 15px; border-radius: 15px;"></p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="font-family:'Bodoni Moda'; font-size: 36px; text-align:center; margin-top: 60px; color: var(--text-main);">Curated for You</h3>
+            <div id="productList" class="product-grid"></div>
+
+            <button onclick="location.reload()" style="background:none; border:none; color:#AAA; width:100%; cursor:pointer; margin-top: 50px; font-size: 14px;">
+                <i class="fas fa-redo"></i> วิเคราะห์ใหม่อีกครั้ง
+            </button>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="toggleCart()"></div>
+    <div class="cart-float" onclick="toggleCart()">
+        <i class="fas fa-shopping-bag"></i>
+        <div class="cart-badge" id="cartCount">0</div>
+    </div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="font-family:'Bodoni Moda'; margin:0; font-size: 24px;">Your Bag</h2>
+            <i class="fas fa-times" onclick="toggleCart()" style="cursor:pointer; font-size: 20px; color: #999;"></i>
+        </div>
+        <div class="cart-items" id="cartItems" style="flex:1; overflow-y:auto;"></div>
+        <div class="cart-total" style="border-top:1px solid #EEE; padding-top:20px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom: 20px; font-size: 18px;">
+                <span>Total</span>
+                <span id="totalPrice" style="color:var(--primary-dark); font-weight:700;">฿0</span>
+            </div>
+            <button class="btn-analyze" style="margin:0;" onclick="alert('ขอบคุณที่สั่งซื้อ!')">Checkout</button>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('preview');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const uploadArea = document.getElementById('uploadArea');
+        const cameraArea = document.getElementById('cameraArea');
+        const toggleMediaBtn = document.getElementById('toggleMedia');
+        const snapBtn = document.getElementById('snap');
+        
+        let cart = [];
+        let allProductsData = []; 
+        let isCameraMode = false;
+        let capturedBlob = null;
+
+        // --- ควบคุมกล้องถ่ายภาพ ---
+        toggleMediaBtn.addEventListener('click', async () => {
+            isCameraMode = !isCameraMode;
+            if (isCameraMode) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                    video.srcObject = stream;
+                    uploadArea.style.display = 'none';
+                    cameraArea.style.display = 'block';
+                    toggleMediaBtn.innerHTML = '<i class="fas fa-image"></i> สลับไปอัปโหลดรูปภาพ';
+                    analyzeBtn.disabled = true;
+                } catch (err) {
+                    alert("ไม่สามารถเข้าถึงกล้องได้: " + err);
+                    isCameraMode = false;
+                }
+            } else {
+                stopCamera();
+                uploadArea.style.display = 'block';
+                cameraArea.style.display = 'none';
+                toggleMediaBtn.innerHTML = '<i class="fas fa-video"></i> สลับไปใช้กล้องถ่ายสด';
+                if (fileInput.files[0]) analyzeBtn.disabled = false;
+            }
+        });
+
+        function stopCamera() {
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+            }
+        }
+
+        snapBtn.addEventListener('click', () => {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob((blob) => {
+                capturedBlob = blob;
+                preview.src = URL.createObjectURL(blob);
+                preview.style.display = 'block';
+                document.getElementById('placeholder').style.display = 'none';
+                stopCamera();
+                cameraArea.style.display = 'none';
+                uploadArea.style.display = 'block';
+                analyzeBtn.disabled = false;
+                isCameraMode = false;
+                toggleMediaBtn.innerHTML = '<i class="fas fa-video"></i> สลับไปใช้กล้องถ่ายสด';
+            }, 'image/jpeg');
+        });
+
+        // --- ระบบตะกร้าสินค้า ---
+        function toggleCart() {
+            const drawer = document.getElementById('cartDrawer');
+            const overlay = document.getElementById('overlay');
+            drawer.classList.toggle('open');
+            overlay.style.display = drawer.classList.contains('open') ? 'block' : 'none';
+        }
+
+        function addToCart(index) {
+            const product = allProductsData[index];
+            if (product) {
+                cart.push(product);
+                updateCartUI();
+                const badge = document.getElementById('cartCount');
+                badge.style.transform = 'scale(1.5)';
+                setTimeout(() => badge.style.transform = 'scale(1)', 200);
+            }
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            document.getElementById('cartCount').innerText = cart.length;
+            const cartItemsContainer = document.getElementById('cartItems');
+            let total = 0;
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<div style="text-align:center; margin-top:50px; color:#CCC;">Bag is empty</div>';
+            } else {
+                cartItemsContainer.innerHTML = cart.map((item, index) => {
+                    total += item.price;
+                    const imgSrc = item.image_url || item.image || 'https://via.placeholder.com/60';
+                    return `<div class="cart-item">
+                        <img src="${imgSrc}" onerror="this.src='https://via.placeholder.com/60'">
+                        <div style="flex:1">
+                            <div style="font-size:13px; font-weight:600;">${item.name}</div>
+                            <div style="font-size:13px; color:var(--primary-dark);">฿${item.price.toLocaleString()}</div>
+                        </div>
+                        <i class="fas fa-trash-alt" style="color:#DDD; cursor:pointer;" onclick="removeFromCart(${index})"></i>
+                    </div>`;
+                }).join('');
+            }
+            document.getElementById('totalPrice').innerText = `฿${total.toLocaleString()}`;
+        }
+
+        // --- อัปโหลดรูปภาพ ---
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                capturedBlob = null;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    preview.src = event.target.result;
+                    preview.style.display = 'block';
+                    document.getElementById('placeholder').style.display = 'none';
+                    analyzeBtn.disabled = false;
+                }
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        // --- เริ่มการวิเคราะห์ (Core Logic) ---
+        analyzeBtn.addEventListener('click', async () => {
+            const originalBtnText = analyzeBtn.innerHTML;
+            analyzeBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> กำลังวิเคราะห์ผิวด้วย AI...';
+            analyzeBtn.disabled = true;
+
+            const formData = new FormData();
+            const fileToSend = capturedBlob || fileInput.files[0];
+            if (!fileToSend) {
+                alert("กรุณาเลือกรูปภาพหรือถ่ายรูปก่อนวิเคราะห์");
+                analyzeBtn.innerHTML = originalBtnText; analyzeBtn.disabled = false;
+                return;
+            }
+
+            formData.append('file', fileToSend, 'analysis_image.jpg');
+            formData.append('skin_type', document.querySelector('input[name="skinType"]:checked').value);
+            formData.append('allergies', document.getElementById('allergyInput').value);
+
+            try {
+                const res = await fetch('/analyze', { method: 'POST', body: formData });
+                const data = await res.json();
+
+                if (data.analysis) {
+                    allProductsData = data.products;
+                    document.getElementById('inputSection').style.display = 'none';
+                    document.getElementById('resultDashboard').style.display = 'block';
+                    document.getElementById('oilScore').innerText = data.analysis.oiliness + "%";
+                    document.getElementById('redScore').innerText = data.analysis.redness + "%";
+                    document.getElementById('userPhoto').src = preview.src;
+                    document.getElementById('morningSteps').innerHTML = data.routine.morning.map(s => `<li>${s}</li>`).join('');
+                    document.getElementById('eveningSteps').innerHTML = data.routine.evening.map(s => `<li>${s}</li>`).join('');
+                    document.getElementById('ingredientTags').innerHTML = data.routine.ingredients.map(ing => `<span class="tag">${ing}</span>`).join('');
+                    
+                    const advice = data.routine.advice;
+                    document.getElementById('adviceText').innerText = (typeof advice === 'object') ? (advice.analysis || JSON.stringify(advice)) : advice;
+
+                    const productContainer = document.getElementById('productList');
+                    if (data.products && data.products.length > 0) {
+                        productContainer.innerHTML = data.products.map((p, index) => {
+                            const isExternal = p.is_external || false;
+                            const affiliateLink = p.affiliate_link || "https://www.watsons.co.th";
+                            const btnHtml = isExternal 
+                                ? `<a href="${affiliateLink}" target="_blank" class="btn-partner"><i class="fas fa-shopping-bag"></i> ไปที่หน้าร้านค้า</a>`
+                                : `<button class="add-btn" onclick="addToCart(${index})"><i class="fas fa-plus"></i></button>`;
+
+                            // ตรวจสอบรูปภาพป้องกัน undefined
+                            const imgSrc = p.image_url || p.image || 'https://via.placeholder.com/300?text=No+Image';
+
+                            return `
+                                <div class="product-card">
+                                    <div class="product-img-container">
+                                        <div class="usage-badge">${p.usage || 'ทั่วไป'}</div>
+                                        <img src="${imgSrc}" onerror="this.src='https://via.placeholder.com/300x300?text=Image+Error'">
+                                    </div>
+                                    <div class="product-info">
+                                        <h4 class="product-name">${p.name}</h4>
+                                        <p class="product-brand">${p.brand || 'Premium Brand'}</p>
+                                        
+                                        <div class="product-details">
+                                            <div style="margin-bottom:5px;"><strong>✨ ส่วนประกอบ:</strong> ${p.ingredients || 'ข้อมูลกำลังอัปเดต'}</div>
+                                            <div><strong>✅ สรรพคุณ:</strong> ${p.benefits || 'ข้อมูลกำลังอัปเดต'}</div>
+                                        </div>
+
+                                        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #F5F5F5; padding-top:15px; margin-top:auto;">
+                                            <span class="price">฿${(p.price || 0).toLocaleString()}</span>
+                                            ${btnHtml}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    } else {
+                        productContainer.innerHTML = '<p style="text-align:center; color:#999; width:100%;">ไม่พบสินค้าแนะนำ</p>';
+                    }
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    alert("Error: " + (data.error || "Unknown Error"));
+                    analyzeBtn.innerHTML = originalBtnText; analyzeBtn.disabled = false;
+                }
+            } catch (err) {
+                console.error(err); alert("การเชื่อมต่อล้มเหลว");
+                analyzeBtn.innerHTML = originalBtnText; analyzeBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
