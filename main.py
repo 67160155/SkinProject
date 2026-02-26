@@ -22,7 +22,7 @@ if not os.path.exists("static/images"):
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # ตั้งค่า API Key และเรียกใช้ Class
-GEMINI_API_KEY = "AIzaSyBzfZ1vwyeSlA9OE4lc2CMouNatkiwlDCw"
+GEMINI_API_KEY = 
 analyzer = SkinAnalyzer()
 ai_bot = SkinExpertAI(GEMINI_API_KEY)
 detector = FaceDetector()
@@ -101,4 +101,5 @@ async def analyze_endpoint(
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
 if __name__ == "__main__":
+
     uvicorn.run(app, host="0.0.0.0", port=8000)
